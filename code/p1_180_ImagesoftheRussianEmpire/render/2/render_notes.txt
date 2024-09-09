@@ -1,0 +1,66 @@
+NO FILTER, NO CROP, trivial stack -- method 1
+associated files: ('./render/2/008___trivial_stack__church.tif', './render/2/009___trivial_stack_sobel__church.tif'))
+max_offset: 150
+Offset for Green Channel: (0, 0)
+Offset for Red Channel: (0, 0)
+Elapsed time: 2.872771978378296 seconds
+
+
+
+YES FILTER, YES CROP, euclidean stack -- method 4
+associated files: ('./render/2/014___SFSA_euclidean_stack__church.tif', './render/2/015___SFSA_euclidean_stack_sobel__church.tif'))
+max_offset: 150
+Offset for Green Channel: (25, 4)
+Offset for Red Channel: (58, -4)
+Elapsed time: 90.88333106040955 seconds
+
+
+
+YES FILTER, YES CROP, YES PYRAMID, euclidean stack -- method 5
+associated files: ('./render/2/016___PYRAMID_SFSA_euclidean_stack__church.tif', './render/2/017___PYRAMID_SFSA_euclidean_stack_sobel__church.tif'))
+max_offset: 200
+crop_amnt: 1067
+initial_window: 100
+num_levels: 5
+Offset for Green Channel: (25, 4)
+Offset for Red Channel: (58, -4)
+Elapsed time: 6.445590019226074 seconds
+
+
+
+NO FILTER, NO CROP, YES PYRAMID, euclidean stack -- method 6
+associated files: ('./render/2/018___PYRAMID_NORMAL_euclidean_stack__church.tif', './render/2/019___PYRAMID_NORMAL_euclidean_stack_sobel__church.tif'))
+max_offset: 200
+crop_amnt: 0
+initial_window: 100
+num_levels: 5
+Offset for Green Channel: (0, -2)
+Offset for Red Channel: (0, 0)
+Elapsed time: 18.871647834777832 seconds
+
+
+
+YES FILTER, YES CROP, YES PYRAMID, euclidean stack -- method 5
+associated files: ('./render/2/016___PYRAMID_SFSA_euclidean_stack__church.tif', './render/2/017___PYRAMID_SFSA_euclidean_stack_sobel__church.tif'))
+max_offset: 200
+crop_amnt: 1067
+initial_window: 100
+num_levels: 5
+Offset for Green Channel: (25, 4)
+Offset for Red Channel: (58, -4)
+Elapsed time: 6.334247827529907 seconds
+
+
+
+NO FILTER, NO CROP, YES PYRAMID, euclidean stack -- method 6
+associated files: ('./render/2/018___PYRAMID_NORMAL_euclidean_stack__church.tif', './render/2/019___PYRAMID_NORMAL_euclidean_stack_sobel__church.tif'))
+max_offset: 200
+crop_amnt: 0
+initial_window: 100
+num_levels: 5
+Offset for Green Channel: (0, -2)
+Offset for Red Channel: (0, 0)
+Elapsed time: 17.51801896095276 seconds
+
+
+
