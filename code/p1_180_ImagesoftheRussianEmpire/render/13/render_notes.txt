@@ -1,0 +1,42 @@
+NO FILTER, NO CROP, trivial stack -- method 1
+associated files: ('./render/13/008___trivial_stack__tobolsk.tif', './render/13/009___trivial_stack_sobel__tobolsk.tif'))
+max_offset: 150
+Offset for Green Channel: (0, 0)
+Offset for Red Channel: (0, 0)
+Elapsed time: 0.028854846954345703 seconds
+
+
+
+YES FILTER, YES CROP, euclidean stack -- method 4
+associated files: ('./render/13/014___SFSA_euclidean_stack__tobolsk.tif', './render/13/015___SFSA_euclidean_stack_sobel__tobolsk.tif'))
+max_offset: 150
+Offset for Green Channel: (3, 3)
+Offset for Red Channel: (7, 3)
+Elapsed time: 12.950792789459229 seconds
+
+
+
+YES FILTER, YES CROP, YES PYRAMID, euclidean stack -- method 5
+associated files: ('./render/13/016___PYRAMID_SFSA_euclidean_stack__tobolsk.tif', './render/13/017___PYRAMID_SFSA_euclidean_stack_sobel__tobolsk.tif'))
+max_offset: 200
+crop_amnt: 113
+initial_window: 100
+num_levels: 5
+Offset for Green Channel: (3, 3)
+Offset for Red Channel: (16, 1)
+Elapsed time: 0.1039118766784668 seconds
+
+
+
+NO FILTER, NO CROP, YES PYRAMID, euclidean stack -- method 6
+associated files: ('./render/13/018___PYRAMID_NORMAL_euclidean_stack__tobolsk.tif', './render/13/019___PYRAMID_NORMAL_euclidean_stack_sobel__tobolsk.tif'))
+max_offset: 200
+crop_amnt: 0
+initial_window: 100
+num_levels: 5
+Offset for Green Channel: (3, 2)
+Offset for Red Channel: (6, 3)
+Elapsed time: 0.2745058536529541 seconds
+
+
+
