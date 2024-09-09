@@ -1,0 +1,42 @@
+NO FILTER, NO CROP, trivial stack -- method 1
+associated files: ('./render/9/008___trivial_stack__onion_church.tif', './render/9/009___trivial_stack_sobel__onion_church.tif'))
+max_offset: 150
+Offset for Green Channel: (0, 0)
+Offset for Red Channel: (0, 0)
+Elapsed time: 2.932725191116333 seconds
+
+
+
+YES FILTER, YES CROP, euclidean stack -- method 4
+associated files: ('./render/9/014___SFSA_euclidean_stack__onion_church.tif', './render/9/015___SFSA_euclidean_stack_sobel__onion_church.tif'))
+max_offset: 150
+Offset for Green Channel: (51, 27)
+Offset for Red Channel: (109, 37)
+Elapsed time: 99.23269295692444 seconds
+
+
+
+YES FILTER, YES CROP, YES PYRAMID, euclidean stack -- method 5
+associated files: ('./render/9/016___PYRAMID_SFSA_euclidean_stack__onion_church.tif', './render/9/017___PYRAMID_SFSA_euclidean_stack_sobel__onion_church.tif'))
+max_offset: 200
+crop_amnt: 1071
+initial_window: 100
+num_levels: 5
+Offset for Green Channel: (51, 27)
+Offset for Red Channel: (109, 37)
+Elapsed time: 7.895269870758057 seconds
+
+
+
+NO FILTER, NO CROP, YES PYRAMID, euclidean stack -- method 6
+associated files: ('./render/9/018___PYRAMID_NORMAL_euclidean_stack__onion_church.tif', './render/9/019___PYRAMID_NORMAL_euclidean_stack_sobel__onion_church.tif'))
+max_offset: 200
+crop_amnt: 0
+initial_window: 100
+num_levels: 5
+Offset for Green Channel: (51, 0)
+Offset for Red Channel: (108, 0)
+Elapsed time: 17.724063873291016 seconds
+
+
+

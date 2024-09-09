@@ -1,0 +1,42 @@
+NO FILTER, NO CROP, trivial stack -- method 1
+associated files: ('./render/4/008___trivial_stack__harvesters.tif', './render/4/009___trivial_stack_sobel__harvesters.tif'))
+max_offset: 150
+Offset for Green Channel: (0, 0)
+Offset for Red Channel: (0, 0)
+Elapsed time: 2.610870122909546 seconds
+
+
+
+YES FILTER, YES CROP, euclidean stack -- method 4
+associated files: ('./render/4/014___SFSA_euclidean_stack__harvesters.tif', './render/4/015___SFSA_euclidean_stack_sobel__harvesters.tif'))
+max_offset: 150
+Offset for Green Channel: (60, 18)
+Offset for Red Channel: (123, 14)
+Elapsed time: 92.58441090583801 seconds
+
+
+
+YES FILTER, YES CROP, YES PYRAMID, euclidean stack -- method 5
+associated files: ('./render/4/016___PYRAMID_SFSA_euclidean_stack__harvesters.tif', './render/4/017___PYRAMID_SFSA_euclidean_stack_sobel__harvesters.tif'))
+max_offset: 200
+crop_amnt: 1072
+initial_window: 100
+num_levels: 5
+Offset for Green Channel: (60, 18)
+Offset for Red Channel: (123, 14)
+Elapsed time: 6.768442869186401 seconds
+
+
+
+NO FILTER, NO CROP, YES PYRAMID, euclidean stack -- method 6
+associated files: ('./render/4/018___PYRAMID_NORMAL_euclidean_stack__harvesters.tif', './render/4/019___PYRAMID_NORMAL_euclidean_stack_sobel__harvesters.tif'))
+max_offset: 200
+crop_amnt: 0
+initial_window: 100
+num_levels: 5
+Offset for Green Channel: (0, 0)
+Offset for Red Channel: (156, 0)
+Elapsed time: 17.169074058532715 seconds
+
+
+
