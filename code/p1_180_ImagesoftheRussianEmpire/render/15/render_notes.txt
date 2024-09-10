@@ -1,0 +1,10 @@
+YES FILTER, YES CROP, euclidean stack -- method 4
+associated files: ('./render/1/014___SFSA_euclidean_stack__z_extra1.tif', './render/1/015___SFSA_euclidean_stack_sobel__z_extra1.tif'))
+max_offset: 200
+crop_amnt: 1082
+Offset for Green Channel: (30, 30)
+Offset for Red Channel: (55, 46)
+Elapsed time: 162.4159128665924 seconds
+
+
+

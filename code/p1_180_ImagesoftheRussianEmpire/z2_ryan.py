@@ -47,7 +47,9 @@ def sobel_filter(image):
     sobel_y = convolve2d(image, Gy, mode='same', boundary='symm')
 
     sobel_mag = np.sqrt(sobel_x**2 + sobel_y**2)
-    # sobel_mag = np.power(sobel_mag, 1)
+
+    # change this to adjust the filter
+    # sobel_mag = np.power(sobel_mag, 0.5)
 
     # handle the division by 0 when shifting
     denominator = (np.max(sobel_mag) - np.min(sobel_mag))
@@ -67,13 +69,19 @@ if __name__ == '__main__':
     # max_offset = 300
     max_offset = 200
     assert (max_offset >= num_processes)
-    images = [
-        'cathedral.tif', 'church.tif', 'emir.tif', 'harvesters.tif',
-        'icon.tif', 'lady.tif', 'melons.tif', 'monastery.tif',
-        'onion_church.tif', 'sculpture.tif', 'self_portrait.tif',
-        'three_generations.tif', 'tobolsk.tif', 'train.tif'
-    ]
+    # comment based on which one you want to use
+
+    # images = [
+    #     'cathedral.tif', 'church.tif', 'emir.tif', 'harvesters.tif',
+    #     'icon.tif', 'lady.tif', 'melons.tif', 'monastery.tif',
+    #     'onion_church.tif', 'sculpture.tif', 'self_portrait.tif',
+    #     'three_generations.tif', 'tobolsk.tif', 'train.tif'
+    # ]
     # images = ['melons.tif', 'self_portrait.tif']
+    # images = [
+    #     'z_extra1.tif', 'z_extra2.tif', 'z_extra3.tif', 'z_extra4.tif'
+    # ]
+    images = ['z_extra2.tif']
 
     i = 1
     for filename in images:
@@ -207,23 +215,78 @@ if __name__ == '__main__':
 
 
 
-        # # -- really good, constrained exhaustive search w/ filter
-        # # TODO: METHOD 4 -- euclidean stack w/ sobel filter to determine shift amount + crop -- uncomment to use
-        # # SFSA: sobel filter + shift amount
+        # -- really good, constrained exhaustive search w/ filter
+        # TODO: METHOD 4 -- euclidean stack w/ sobel filter to determine shift amount + crop -- uncomment to use
+        # SFSA: sobel filter + shift amount
+        start_time = time.time()
+        # now do the exhaustive search to see if you can find the shift_y and shift_x amounts (shift_y, shift_x)
+        # with Euclidean distance
+
+        # DEFUALT FOR ALL IS /3
+        crop_amnt = int(min(blue.shape)/3)
+        # crop_amnt = int(min(blue.shape)/2)
+
+
+        print(f"crop_amount: {crop_amnt}")
+        offset_green = align_images_multicore(trim_borders(sobel_filter(blue), crop_amnt, crop_amnt, crop_amnt, crop_amnt), trim_borders(sobel_filter(green), crop_amnt, crop_amnt, crop_amnt, crop_amnt), max_offset=max_offset, num_processes=num_processes,
+                                              error_metric='euclidean')
+        print(f"max_offset: {max_offset}\nOffset for Green Channel:", offset_green)
+        offset_red = align_images_multicore(trim_borders(sobel_filter(blue), crop_amnt, crop_amnt, crop_amnt, crop_amnt), trim_borders(sobel_filter(red), crop_amnt, crop_amnt, crop_amnt, crop_amnt), max_offset=max_offset, num_processes=num_processes,
+                                            error_metric='euclidean')
+        print(f"max_offset: {max_offset}\nOffset for Red Channel:", offset_red)
+
+        filename_nofilter = save_directory + f"{i}/" + "014___SFSA_euclidean_stack__" + filename
+        filename_yesfilter = save_directory + f"{i}/" + "015___SFSA_euclidean_stack_sobel__" + filename
+
+        blue_shifted, green_shifted, red_shifted = apply_shifts(blue, green, red, offset_green, offset_red)
+        rgb_image_nofilter = np.stack((red_shifted, green_shifted, blue_shifted), axis=-1)
+        rgb_image_yesfilter = np.stack(((sobel_filter(red_shifted) * 65535).astype(np.uint16),
+                                        (sobel_filter(green_shifted) * 65535).astype(np.uint16),
+                                        (sobel_filter(blue_shifted) * 65535).astype(np.uint16)), axis=-1)
+        io.imsave(filename_nofilter, rgb_image_nofilter)
+        io.imsave(filename_yesfilter, rgb_image_yesfilter)
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+
+        # write the offset_green and offset_red to txt file
+        with open(f"{save_directory}" + f"{i}/" + "render_notes.txt", 'a') as file:
+            file.write(f"YES FILTER, YES CROP, euclidean stack -- method 4\n")
+            file.write(f"associated files: {filename_nofilter, filename_yesfilter})\n")
+            file.write(f"max_offset: {max_offset}\n")
+            file.write(f"crop_amnt: {crop_amnt}\n")
+            file.write(f"Offset for Green Channel: {offset_green}\n")
+            file.write(f"Offset for Red Channel: {offset_red}\n")
+            file.write(f"Elapsed time: {elapsed_time} seconds\n")
+            file.write("\n\n\n")
+
+
+
+
+
+
+        # # TODO: METHOD 5 -- multiscale pyramid version -- filter + crop
         # start_time = time.time()
-        # # now do the exhaustive search to see if you can find the shift_y and shift_x amounts (shift_y, shift_x)
+        # # now do the multiscale pyramid version search to see if you can find the shift_y and shift_x amounts (shift_y, shift_x)
         # # with Euclidean distance
         # crop_amnt = int(min(blue.shape)/3)
         # print(f"crop_amount: {crop_amnt}")
-        # offset_green = align_images_multicore(trim_borders(sobel_filter(blue), crop_amnt, crop_amnt, crop_amnt, crop_amnt), trim_borders(sobel_filter(green), crop_amnt, crop_amnt, crop_amnt, crop_amnt), max_offset=max_offset, num_processes=num_processes,
-        #                                       error_metric='euclidean')
+        #
+        # image = np.stack(
+        #     (trim_borders(sobel_filter(blue), crop_amnt, crop_amnt, crop_amnt, crop_amnt),
+        #      trim_borders(sobel_filter(green), crop_amnt, crop_amnt, crop_amnt, crop_amnt),
+        #      trim_borders(sobel_filter(red), crop_amnt, crop_amnt, crop_amnt, crop_amnt)), axis=-1)
+        #
+        # # make sure the window is not larger than res after crop o/w will error
+        # iw = 100
+        # nl = 5
+        # result, offsets = align_channels(image, initial_window=iw, num_levels=nl)
+        # offset_green = offsets[0]
+        # offset_red = offsets[1]
         # print(f"max_offset: {max_offset}\nOffset for Green Channel:", offset_green)
-        # offset_red = align_images_multicore(trim_borders(sobel_filter(blue), crop_amnt, crop_amnt, crop_amnt, crop_amnt), trim_borders(sobel_filter(red), crop_amnt, crop_amnt, crop_amnt, crop_amnt), max_offset=max_offset, num_processes=num_processes,
-        #                                     error_metric='euclidean')
         # print(f"max_offset: {max_offset}\nOffset for Red Channel:", offset_red)
         #
-        # filename_nofilter = save_directory + f"{i}/" + "014___SFSA_euclidean_stack__" + filename
-        # filename_yesfilter = save_directory + f"{i}/" + "015___SFSA_euclidean_stack_sobel__" + filename
+        # filename_nofilter = save_directory + f"{i}/" + "016___PYRAMID_SFSA_euclidean_stack__" + filename
+        # filename_yesfilter = save_directory + f"{i}/" + "017___PYRAMID_SFSA_euclidean_stack_sobel__" + filename
         #
         # blue_shifted, green_shifted, red_shifted = apply_shifts(blue, green, red, offset_green, offset_red)
         # rgb_image_nofilter = np.stack((red_shifted, green_shifted, blue_shifted), axis=-1)
@@ -237,10 +300,12 @@ if __name__ == '__main__':
         #
         # # write the offset_green and offset_red to txt file
         # with open(f"{save_directory}" + f"{i}/" + "render_notes.txt", 'a') as file:
-        #     file.write(f"YES FILTER, YES CROP, euclidean stack -- method 4\n")
+        #     file.write(f"YES FILTER, YES CROP, YES PYRAMID, euclidean stack -- method 5\n")
         #     file.write(f"associated files: {filename_nofilter, filename_yesfilter})\n")
         #     file.write(f"max_offset: {max_offset}\n")
         #     file.write(f"crop_amnt: {crop_amnt}\n")
+        #     file.write(f"initial_window: {iw}\n")
+        #     file.write(f"num_levels: {nl}\n")
         #     file.write(f"Offset for Green Channel: {offset_green}\n")
         #     file.write(f"Offset for Red Channel: {offset_red}\n")
         #     file.write(f"Elapsed time: {elapsed_time} seconds\n")
@@ -248,101 +313,51 @@ if __name__ == '__main__':
 
 
 
-
-        # TODO: METHOD 5 -- multiscale pyramid version -- filter + crop
-        start_time = time.time()
-        # now do the multiscale pyramid version search to see if you can find the shift_y and shift_x amounts (shift_y, shift_x)
-        # with Euclidean distance
-        crop_amnt = int(min(blue.shape)/3)
-        print(f"crop_amount: {crop_amnt}")
-
-        image = np.stack(
-            (trim_borders(sobel_filter(blue), crop_amnt, crop_amnt, crop_amnt, crop_amnt),
-             trim_borders(sobel_filter(green), crop_amnt, crop_amnt, crop_amnt, crop_amnt),
-             trim_borders(sobel_filter(red), crop_amnt, crop_amnt, crop_amnt, crop_amnt)), axis=-1)
-
-        # make sure the window is not larger than res after crop o/w will error
-        iw = 100
-        nl = 5
-        result, offsets = align_channels(image, initial_window=iw, num_levels=nl)
-        offset_green = offsets[0]
-        offset_red = offsets[1]
-        print(f"max_offset: {max_offset}\nOffset for Green Channel:", offset_green)
-        print(f"max_offset: {max_offset}\nOffset for Red Channel:", offset_red)
-
-        filename_nofilter = save_directory + f"{i}/" + "016___PYRAMID_SFSA_euclidean_stack__" + filename
-        filename_yesfilter = save_directory + f"{i}/" + "017___PYRAMID_SFSA_euclidean_stack_sobel__" + filename
-
-        blue_shifted, green_shifted, red_shifted = apply_shifts(blue, green, red, offset_green, offset_red)
-        rgb_image_nofilter = np.stack((red_shifted, green_shifted, blue_shifted), axis=-1)
-        rgb_image_yesfilter = np.stack(((sobel_filter(red_shifted) * 65535).astype(np.uint16),
-                                        (sobel_filter(green_shifted) * 65535).astype(np.uint16),
-                                        (sobel_filter(blue_shifted) * 65535).astype(np.uint16)), axis=-1)
-        io.imsave(filename_nofilter, rgb_image_nofilter)
-        io.imsave(filename_yesfilter, rgb_image_yesfilter)
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-
-        # write the offset_green and offset_red to txt file
-        with open(f"{save_directory}" + f"{i}/" + "render_notes.txt", 'a') as file:
-            file.write(f"YES FILTER, YES CROP, YES PYRAMID, euclidean stack -- method 5\n")
-            file.write(f"associated files: {filename_nofilter, filename_yesfilter})\n")
-            file.write(f"max_offset: {max_offset}\n")
-            file.write(f"crop_amnt: {crop_amnt}\n")
-            file.write(f"initial_window: {iw}\n")
-            file.write(f"num_levels: {nl}\n")
-            file.write(f"Offset for Green Channel: {offset_green}\n")
-            file.write(f"Offset for Red Channel: {offset_red}\n")
-            file.write(f"Elapsed time: {elapsed_time} seconds\n")
-            file.write("\n\n\n")
-
-
-
-        # TODO: METHOD 6 -- multiscale pyramid version -- normal
-        start_time = time.time()
-        # now do the multiscale pyramid version search to see if you can find the shift_y and shift_x amounts (shift_y, shift_x)
-        # with Euclidean distance
-        crop_amnt = 0
-        print(f"crop_amount: {crop_amnt}")
-
-        image = np.stack(
-            (trim_borders(blue, crop_amnt, crop_amnt, crop_amnt, crop_amnt),
-             trim_borders(green, crop_amnt, crop_amnt, crop_amnt, crop_amnt),
-             trim_borders(red, crop_amnt, crop_amnt, crop_amnt, crop_amnt)), axis=-1)
-
-        iw = 100
-        nl = 5
-        result, offsets = align_channels(image, initial_window=iw, num_levels=nl)
-        offset_green = offsets[0]
-        offset_red = offsets[1]
-        print(f"max_offset: {max_offset}\nOffset for Green Channel:", offset_green)
-        print(f"max_offset: {max_offset}\nOffset for Red Channel:", offset_red)
-
-        filename_nofilter = save_directory + f"{i}/" + "018___PYRAMID_NORMAL_euclidean_stack__" + filename
-        filename_yesfilter = save_directory + f"{i}/" + "019___PYRAMID_NORMAL_euclidean_stack_sobel__" + filename
-
-        blue_shifted, green_shifted, red_shifted = apply_shifts(blue, green, red, offset_green, offset_red)
-        rgb_image_nofilter = np.stack((red_shifted, green_shifted, blue_shifted), axis=-1)
-        rgb_image_yesfilter = np.stack(((sobel_filter(red_shifted) * 65535).astype(np.uint16),
-                                        (sobel_filter(green_shifted) * 65535).astype(np.uint16),
-                                        (sobel_filter(blue_shifted) * 65535).astype(np.uint16)), axis=-1)
-        io.imsave(filename_nofilter, rgb_image_nofilter)
-        io.imsave(filename_yesfilter, rgb_image_yesfilter)
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-
-        # write the offset_green and offset_red to txt file
-        with open(f"{save_directory}" + f"{i}/" + "render_notes.txt", 'a') as file:
-            file.write(f"NO FILTER, NO CROP, YES PYRAMID, euclidean stack -- method 6\n")
-            file.write(f"associated files: {filename_nofilter, filename_yesfilter})\n")
-            file.write(f"max_offset: {max_offset}\n")
-            file.write(f"crop_amnt: {crop_amnt}\n")
-            file.write(f"initial_window: {iw}\n")
-            file.write(f"num_levels: {nl}\n")
-            file.write(f"Offset for Green Channel: {offset_green}\n")
-            file.write(f"Offset for Red Channel: {offset_red}\n")
-            file.write(f"Elapsed time: {elapsed_time} seconds\n")
-            file.write("\n\n\n")
+        # # TODO: METHOD 6 -- multiscale pyramid version -- normal
+        # start_time = time.time()
+        # # now do the multiscale pyramid version search to see if you can find the shift_y and shift_x amounts (shift_y, shift_x)
+        # # with Euclidean distance
+        # crop_amnt = 0
+        # print(f"crop_amount: {crop_amnt}")
+        #
+        # image = np.stack(
+        #     (trim_borders(blue, crop_amnt, crop_amnt, crop_amnt, crop_amnt),
+        #      trim_borders(green, crop_amnt, crop_amnt, crop_amnt, crop_amnt),
+        #      trim_borders(red, crop_amnt, crop_amnt, crop_amnt, crop_amnt)), axis=-1)
+        #
+        # iw = 100
+        # nl = 5
+        # result, offsets = align_channels(image, initial_window=iw, num_levels=nl)
+        # offset_green = offsets[0]
+        # offset_red = offsets[1]
+        # print(f"max_offset: {max_offset}\nOffset for Green Channel:", offset_green)
+        # print(f"max_offset: {max_offset}\nOffset for Red Channel:", offset_red)
+        #
+        # filename_nofilter = save_directory + f"{i}/" + "018___PYRAMID_NORMAL_euclidean_stack__" + filename
+        # filename_yesfilter = save_directory + f"{i}/" + "019___PYRAMID_NORMAL_euclidean_stack_sobel__" + filename
+        #
+        # blue_shifted, green_shifted, red_shifted = apply_shifts(blue, green, red, offset_green, offset_red)
+        # rgb_image_nofilter = np.stack((red_shifted, green_shifted, blue_shifted), axis=-1)
+        # rgb_image_yesfilter = np.stack(((sobel_filter(red_shifted) * 65535).astype(np.uint16),
+        #                                 (sobel_filter(green_shifted) * 65535).astype(np.uint16),
+        #                                 (sobel_filter(blue_shifted) * 65535).astype(np.uint16)), axis=-1)
+        # io.imsave(filename_nofilter, rgb_image_nofilter)
+        # io.imsave(filename_yesfilter, rgb_image_yesfilter)
+        # end_time = time.time()
+        # elapsed_time = end_time - start_time
+        #
+        # # write the offset_green and offset_red to txt file
+        # with open(f"{save_directory}" + f"{i}/" + "render_notes.txt", 'a') as file:
+        #     file.write(f"NO FILTER, NO CROP, YES PYRAMID, euclidean stack -- method 6\n")
+        #     file.write(f"associated files: {filename_nofilter, filename_yesfilter})\n")
+        #     file.write(f"max_offset: {max_offset}\n")
+        #     file.write(f"crop_amnt: {crop_amnt}\n")
+        #     file.write(f"initial_window: {iw}\n")
+        #     file.write(f"num_levels: {nl}\n")
+        #     file.write(f"Offset for Green Channel: {offset_green}\n")
+        #     file.write(f"Offset for Red Channel: {offset_red}\n")
+        #     file.write(f"Elapsed time: {elapsed_time} seconds\n")
+        #     file.write("\n\n\n")
 
 
 
