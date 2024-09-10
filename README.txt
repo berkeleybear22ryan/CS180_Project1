@@ -17,6 +17,7 @@ z2_ryan.py
     001___original_icon.tif
     002___bw_1of3_blue_icon.tif
     003___bw_2of3_green_icon.tif
+    003___bw_2of3_green_icon.tif
     004___bw_3of3_red_icon.tif
     005___sobel_1of3_blue_icon.tif
     006___sobel_2of3_green_icon.tif
@@ -99,5 +100,5 @@ FOLDERS
 *IMPORTANT: when I compress, I might change all .tif to .jpg so that I can fit it in the submission portal but should all be on github and website
 *IMPORTANT: data showing improvement is also in the render_notes.txt for each image
 
-github: ???
-website: ???
+github: https://github.com/berkeleybear22ryan/CS180_Project1
+website: https://berkeleybear22ryan.github.io/CS180_Project1/

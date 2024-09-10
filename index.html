@@ -1,16 +1,380 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My Portfolio</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Russian Empire Image Colorization Project</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: Menlo, monospace;
+            margin: 0;
+            padding: 10px;
+            background-color: #000000;
+            color: #ffffff;
+            font-size: 8px;
+            font-weight: 200;
+            line-height: 1.3;
+        }
+        .section {
+            border: 1px solid #333;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        h1, h2 {
+            margin-top: 0;
+        }
+        h1 {
+            font-size: 14px;
+        }
+        h2 {
+            font-size: 12px;
+        }
+        .video-container, .extra-image-container, .extra-credit-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        .video-card, .extra-image-card, .extra-credit-card {
+            width: calc(33.333% - 10px);
+            min-width: 250px;
+            max-width: 400px;
+            border: 1px solid #333;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+        .video-wrapper {
+            width: 100%;
+            position: relative;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            overflow: hidden;
+        }
+        video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .info {
+            margin-top: 5px;
+        }
+        .info p {
+            margin: 2px 0;
+        }
+        strong {
+            font-weight: 400;
+        }
+        .image-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+        }
+        .image-container img {
+            width: 48%;
+            height: auto;
+            object-fit: contain;
+            margin-bottom: 5px;
+        }
+        .extra-image-container .image-container img {
+            width: 32%;
+        }
+        .fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .fullscreen .video-card, .fullscreen .extra-image-card, .fullscreen .extra-credit-card {
+            width: 90%;
+            max-width: 1200px;
+        }
+        .fullscreen video::-webkit-media-controls {
+            display: none !important;
+        }
+        .fullscreen video::-webkit-media-controls-enclosure {
+            display: none !important;
         }
     </style>
 </head>
 <body>
-    <h1>Welcome to My CS180 Portfolio!</h1>
-    <a href="./1/index.html">Project 1</a>
+    <h1>Russian Empire Image Colorization Project -- Ryan Allyn Nader -- CS180 FALL 2024</h1>
+    <h1>github: https://github.com/berkeleybear22ryan/CS180_Project1</h1>
+    <h1>website: https://berkeleybear22ryan.github.io/CS180_Project1/</h1>
+
+    <div class="section">
+        <h2>1. Project Overview and Approach</h2>
+        <p>This project aims to colorize the Prokudin-Gorskii photo collection from the Russian Empire. The collection consists of glass plate negatives with three separate exposures for red, green, and blue color channels. My task is to align these channels and produce a single color image.</p>
+
+        <h3>Approach:</h3>
+        <p>I implemented several methods for aligning and colorizing the images:</p>
+        <ol>
+            <li>Trivial stack: Simply stacking the three channels without alignment.</li>
+            <li>Euclidean stack: Using exhaustive search with Euclidean distance as the error metric.</li>
+            <li>Normalized Cross-Correlation (NCC) stack: Similar to Euclidean, but using NCC as the error metric.</li>
+            <li>Sobel filter with crop: Applying a Sobel filter to detect edges before alignment, significantly improving speed and results.</li>
+            <li>Multiscale pyramid with Sobel filter and crop: Combining the Sobel filter approach with a pyramid structure for even faster processing.</li>
+            <li>Multiscale pyramid (normal): The standard pyramid approach without additional filtering.</li>
+        </ol>
+
+        <h3>Implementation Details:</h3>
+        <ul>
+            <li>Image preprocessing to convert all images to .tif format for lossless processing.</li>
+            <li>Multiple alignment methods, including exhaustive search and pyramid-based approaches.</li>
+            <li>Sobel filter implementation for edge detection to improve alignment accuracy.</li>
+            <li>Automatic cropping to remove border artifacts after alignment.</li>
+            <li>Multicore processing for improved performance on compatible systems.</li>
+        </ul>
+
+        <h3>Challenges and Solutions:</h3>
+        <p>The main challenges were processing speed for high-resolution images and achieving accurate alignment for images with low contrast. I addressed these by:</p>
+        <ul>
+            <li>Implementing the pyramid approach for faster processing of large images.</li>
+            <li>Using the Sobel filter to enhance edges, improving alignment accuracy even in low-contrast situations.</li>
+            <li>Applying automatic cropping to remove misalignment artifacts at image borders.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>2. Results on Example Images</h2>
+        <p>Below are the results of my algorithm on all provided example images. The offsets calculated for each image are listed, and the results are displayed using compressed video formats. Each area is selectable.</p>
+
+        <div class="video-container">
+            <!-- confirm ... video cards will be dynamically inserted here by JavaScript -->
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>3. Results on Additional Images</h2>
+        <p>I applied my algorithm to additional images from the Prokudin-Gorskii collection. The results for these images are displayed below:</p>
+
+        <div class="extra-image-container" id="extraImageContainer">
+            <!-- confirm ... extra image cards will be dynamically inserted here by JavaScript -->
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>4. Alignment Failures</h2>
+        <p>My algorithm successfully aligned all provided images. The only issues that showed up are like in the z_extra2.jpeg where because the image is so messy and distored it is very difficult to focus on important outlines as the suns outline is very small and thus have very little effect on reducing the error function so naturally it will focus on parts that it should not.</p>
+        <p>This also could happen on some lower resolution images as there was less to work with but based on my eye every still looked good given the resolution level.</p>
+    </div>
+
+    <div class="section">
+        <h2>5. Extra Credit Implementations (Bells and Whistles)</h2>
+        <p>I implemented several extra credit features to enhance the quality and efficiency of my colorization process:</p>
+        <ul>
+            <li><strong>Sobel filter:</strong> Used for edge detection to improve alignment accuracy, especially in images with low contrast between channels.</li>
+            <li><strong>Automatic cropping:</strong> Removes border artifacts that occur due to misalignment, improving the final image quality.</li>
+            <li><strong>Multicore processing:</strong> Utilizes multiple CPU cores for faster processing, especially beneficial for large images and the pyramid approach.</li>
+        </ul>
+
+        <h3>Before and After Comparisons:</h3>
+        <div class="extra-credit-container" id="extraCreditContainer">
+            <!-- confirm ... extra credit image cards will be dynamically inserted here by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        const videoData = [
+            { filename: "1_P1_180.mp4", basedOff: "cathedral.jpg", offsets: { green: [5, 2], red: [12, 3] }, description: "This image showcases a colorized view of a historic Russian cathedral. The intricate architecture and vibrant colors bring new life to this iconic structure from the Russian Empire era." },
+            { filename: "2_P1_180.mp4", basedOff: "church.jpg", offsets: { green: [25, 4], red: [58, -4] }, description: "A colorized image of a traditional Russian church. The vibrant hues highlight the unique architectural features and cultural significance of this religious structure." },
+            { filename: "3_P1_180__c.mp4", basedOff: "emir.jpg", offsets: { green: [49, 24], red: [107, 41] }, description: "This colorized portrait depicts an Emir from the Russian Empire era. The added color brings out the rich details of his traditional attire and regal bearing." },
+            { filename: "4_P1_180__c.mp4", basedOff: "harvesters.jpg", offsets: { green: [60, 18], red: [123, 14] }, description: "A colorized scene of harvesters at work in Imperial Russia. The added colors reveal the vibrancy of rural life and agricultural practices of the era." },
+            { filename: "5_P1_180__c.mp4", basedOff: "icon.jpg", offsets: { green: [41, 18], red: [90, 23] }, description: "This colorized image presents a traditional Russian religious icon. The vibrant hues accentuate the spiritual significance and artistic craftsmanship of this sacred artifact." },
+            { filename: "6_P1_180__c.mp4", basedOff: "lady.jpg", offsets: { green: [53, 8], red: [114, 14] }, description: "A colorized portrait of a lady from the Russian Empire period. The added colors breathe life into her clothing and surroundings, offering a glimpse into the fashion and social status of the time." },
+            { filename: "7_P1_180__c.mp4", basedOff: "melons.jpg", offsets: { green: [82, 10], red: [182, 13] }, description: "This colorized image features a scene with melons, possibly from a market or farm. The vibrant colors highlight the richness of agricultural produce in Imperial Russia." },
+            { filename: "8_P1_180.mp4", basedOff: "monastery.jpg", offsets: { green: [-3, 2], red: [3, 2] }, description: "A colorized view of a Russian monastery complex. The added colors accentuate the architectural beauty and serene atmosphere of this religious site." },
+            { filename: "9_P1_180__c.mp4", basedOff: "onion_church.jpg", offsets: { green: [51, 27], red: [109, 37] }, description: "This colorized image showcases a church with distinctive onion domes, a hallmark of Russian architecture. The vibrant colors highlight the unique design and cultural significance of this structure." },
+            { filename: "10_P1_180__c.mp4", basedOff: "sculpture.jpg", offsets: { green: [33, -11], red: [140, -27] }, description: "A colorized view of a sculpture from the Russian Empire era. The added colors bring depth and life to this artistic masterpiece, highlighting its historical and cultural importance." },
+            { filename: "11_P1_180__c.mp4", basedOff: "self_portrait.jpg", offsets: { green: [78, 29], red: [175, 37] }, description: "This colorized self-portrait of an artist from Imperial Russia offers a vivid glimpse into the world of art and personal expression during this historical period." },
+            { filename: "12_P1_180__c.mp4", basedOff: "three_generations.jpg", offsets: { green: [52, 13], red: [111, 11] }, description: "A colorized portrait showcasing three generations of a Russian family. The added colors help to distinguish the familial bonds and the passage of time across generations." },
+            { filename: "13_P1_180.mp4", basedOff: "tobolsk.jpg", offsets: { green: [3, 3], red: [7, 3] }, description: "This colorized scene from Tobolsk, a historic Siberian city, brings to life the urban landscape and daily life in this important Russian settlement." },
+            { filename: "14_P1_180__c.mp4", basedOff: "train.jpg", offsets: { green: [43, 8], red: [86, 33] }, description: "A colorized scene featuring a train from the Russian Empire era. The vibrant colors highlight the technological advancements and the importance of rail transport in Imperial Russia." }
+        ];
+
+        const extraImageData = [
+    { filename: "z_extra1.jpeg", folder: "15" },
+    { filename: "z_extra2.jpeg", folder: "16" },
+    { filename: "z_extra3.jpeg", folder: "17" },
+    { filename: "z_extra4.jpeg", folder: "18" }
+];
+
+function createVideoCard(data, index) {
+    const card = document.createElement('div');
+    card.className = 'video-card';
+    card.innerHTML = `
+        <div class="video-wrapper">
+            <video loop muted playsinline>
+                <source src="./code/p1_180_ImagesoftheRussianEmpire/videos/${data.filename}" type="video/mp4">
+            </video>
+        </div>
+        <div class="image-container">
+            <img src="./code/p1_180_ImagesoftheRussianEmpire/render/${index + 1}/015___SFSA_euclidean_stack_sobel__${data.basedOff.split('.')[0]}.jpeg" alt="SFSA Euclidean Stack Sobel">
+            <img src="./code/p1_180_ImagesoftheRussianEmpire/render/${index + 1}/014___SFSA_euclidean_stack__${data.basedOff.split('.')[0]}.jpeg" alt="SFSA Euclidean Stack">
+        </div>
+        <div class="info">
+            <p><strong>Filename:</strong> ${data.filename}</p>
+            <p><strong>Based off:</strong> ${data.basedOff}</p>
+            <p><strong>Offsets:</strong> Green (${data.offsets.green[0]}, ${data.offsets.green[1]}), Red (${data.offsets.red[0]}, ${data.offsets.red[1]})</p>
+            <p><strong>Description:</strong> ${data.description}</p>
+        </div>
+    `;
+    return card;
+}
+
+function createExtraImageCard(data) {
+    const card = document.createElement('div');
+    card.className = 'extra-image-card';
+    card.innerHTML = `
+        <div class="image-container">
+            <img src="./code/p1_180_ImagesoftheRussianEmpire/render/${data.folder}/014___SFSA_euclidean_stack__${data.filename}" alt="SFSA Euclidean Stack">
+            <img src="./code/p1_180_ImagesoftheRussianEmpire/render/${data.folder}/015___SFSA_euclidean_stack_sobel__${data.filename}" alt="SFSA Euclidean Stack Sobel">
+            <img src="./code/p1_180_ImagesoftheRussianEmpire/render/${data.folder}/answer.jpeg" alt="Answer">
+        </div>
+        <div class="info">
+            <p><strong>Filename:</strong> ${data.filename}</p>
+            <p><strong>Render Notes:</strong> <span id="renderNotes${data.folder}">Loading...</span></p>
+        </div>
+    `;
+    return card;
+}
+
+function setupCard(card, data, container, isVideo = true) {
+    if (isVideo) {
+        const video = card.querySelector('video');
+        video.addEventListener('timeupdate', function() {
+            if (this.currentTime >= this.duration - 0.1) {
+                this.pause();
+                setTimeout(() => {
+                    this.currentTime = 0;
+                    this.play().catch(e => console.error("Error playing video:", e));
+                }, 5000); // 5 second pause ... check this not working right now
+            }
+        });
+    }
+
+    card.addEventListener('click', function() {
+        const fullscreenDiv = document.createElement('div');
+        fullscreenDiv.className = 'fullscreen';
+
+        const fullscreenCard = card.cloneNode(true);
+        if (isVideo) {
+            const video = card.querySelector('video');
+            const fullscreenVideo = fullscreenCard.querySelector('video');
+            fullscreenVideo.muted = false;
+            fullscreenVideo.currentTime = video.currentTime;
+            fullscreenVideo.play().catch(e => console.error("Error playing fullscreen video:", e));
+        }
+
+        fullscreenDiv.appendChild(fullscreenCard);
+        document.body.appendChild(fullscreenDiv);
+
+        fullscreenDiv.addEventListener('click', function(e) {
+            if (e.target === fullscreenDiv) {
+                if (isVideo) {
+                    const video = card.querySelector('video');
+                    const fullscreenVideo = fullscreenCard.querySelector('video');
+                    video.currentTime = fullscreenVideo.currentTime;
+                }
+                document.body.removeChild(fullscreenDiv);
+            }
+        });
+    });
+
+    container.appendChild(card);
+}
+
+const container = document.querySelector('.video-container');
+videoData.forEach((data, index) => {
+    const card = createVideoCard(data, index);
+    setupCard(card, data, container, true);
+});
+
+const extraContainer = document.getElementById('extraImageContainer');
+extraImageData.forEach((data) => {
+    const card = createExtraImageCard(data);
+    setupCard(card, data, extraContainer, false);
+
+    // make sure to fetch and display render notes
+    fetch(`./code/p1_180_ImagesoftheRussianEmpire/render/${data.folder}/render_notes.txt`)
+        .then(response => response.text())
+        .then(text => {
+            document.getElementById(`renderNotes${data.folder}`).textContent = text;
+        })
+        .catch(error => {
+            console.error("Error fetching render notes:", error);
+            document.getElementById(`renderNotes${data.folder}`).textContent = "Failed to load render notes.";
+        });
+});
+
+const extraCreditData = [
+            { folder: "1", baseName: "cathedral" },
+            { folder: "2", baseName: "church" },
+            { folder: "3", baseName: "emir" },
+            { folder: "4", baseName: "harvesters" },
+            { folder: "5", baseName: "icon" },
+            { folder: "6", baseName: "lady" },
+            { folder: "7", baseName: "melons" },
+            { folder: "8", baseName: "monastery" },
+            { folder: "9", baseName: "onion_church" },
+            { folder: "10", baseName: "sculpture" },
+            { folder: "11", baseName: "self_portrait" },
+            { folder: "12", baseName: "three_generations" },
+            { folder: "13", baseName: "tobolsk" },
+            { folder: "14", baseName: "train" }
+        ];
+
+        function createExtraCreditCard(data) {
+            const card = document.createElement('div');
+            card.className = 'extra-credit-card';
+            card.innerHTML = `
+                <div class="image-container">
+                    <img src="./code/p1_180_ImagesoftheRussianEmpire/render/${data.folder}/018___PYRAMID_NORMAL_euclidean_stack__${data.baseName}.jpeg" alt="NO FILTER, NO CROP, YES PYRAMID">
+                    <img src="./code/p1_180_ImagesoftheRussianEmpire/render/${data.folder}/019___PYRAMID_NORMAL_euclidean_stack_sobel__${data.baseName}.jpeg" alt="NO FILTER, NO CROP, YES PYRAMID, Sobel">
+                </div>
+                <div class="image-container">
+                    <img src="./code/p1_180_ImagesoftheRussianEmpire/render/${data.folder}/014___SFSA_euclidean_stack__${data.baseName}.jpeg" alt="YES FILTER, YES CROP">
+                    <img src="./code/p1_180_ImagesoftheRussianEmpire/render/${data.folder}/015___SFSA_euclidean_stack_sobel__${data.baseName}.jpeg" alt="YES FILTER, YES CROP, Sobel">
+                </div>
+                <div class="info">
+                    <p><strong>Image:</strong> ${data.baseName}</p>
+                    <p><strong>Render Notes:</strong> <span id="renderNotes${data.folder}">Loading...</span></p>
+                </div>
+            `;
+            return card;
+        }
+
+        const extraCreditContainer = document.getElementById('extraCreditContainer');
+        extraCreditData.forEach((data) => {
+            const card = createExtraCreditCard(data);
+            setupCard(card, data, extraCreditContainer, false);
+
+            // make sure to ... fetch and display render notes
+            fetch(`./code/p1_180_ImagesoftheRussianEmpire/render/${data.folder}/render_notes.txt`)
+                .then(response => response.text())
+                .then(text => {
+                    document.getElementById(`renderNotes${data.folder}`).textContent = text;
+                })
+                .catch(error => {
+                    console.error("Error fetching render notes:", error);
+                    document.getElementById(`renderNotes${data.folder}`).textContent = "Failed to load render notes.";
+                });
+        });
+
+// IMPORTANT ... global error handler
+window.onerror = function(message, source, lineno, colno, error) {
+    console.error("Global error:", message, "at", source, ":", lineno);
+    return true;
+};
+    </script>
 </body>
 </html>
